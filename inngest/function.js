@@ -1,48 +1,60 @@
-import {inngest} from "./client";
-import prisma from "@/lib/prisma";
+import { inngest } from "./client";
 
-export const syncUserCreation= inngest.createFunction(
-    {id: "sync-user-create"},
-    {event: "clerk/user.created"},
-    async ({event})=>{
-        const {data} = event;
+let prisma;
+
+async function getPrisma() {
+  if (!prisma) {
+    const { PrismaClient } = await import("@prisma/client");
+    prisma = new PrismaClient();
+  }
+  return prisma;
+}
+
+export const syncUserCreation = inngest.createFunction(
+  { id: "sync-user-create" },
+  { event: "clerk/user.created" },
+  async ({ event }) => {
+    const prisma = await getPrisma();
+    const { data } = event;
+
     await prisma.user.create({
-        data:{
-            id: data.id,
-            email: data.email_addresses[0]?.email_address || "",
-            name: `${data.first_name} ${data.last_name}`,
-            image:data.image_url || null,
-        },
+      data: {
+        id: data.id,
+        email: data.email_addresses[0]?.email_address || "",
+        name: `${data.first_name ?? ""} ${data.last_name ?? ""}`,
+        image: data.image_url || null,
+      },
     });
-    }
+  }
 );
 
+export const syncUserUpdation = inngest.createFunction(
+  { id: "sync-user-update" },
+  { event: "clerk/user.updated" },
+  async ({ event }) => {
+    const prisma = await getPrisma();
+    const { data } = event;
 
-export const syncUserUpdation= inngest.createFunction(
-         {id: "sync-user-update"},
-         {event: "clerk/user.updated"},
-         async ({event})=>{
-              const {data} = event;
-              await prisma.user.update({
-                    where: {id: data.id,},
-                    data:{
-                    
-                     email: data.email_addresses[0]?.email_address || "",
-                     name: `${data.first_name} ${data.last_name}`,
-                     image:data.image_url || null,
-        },
+    await prisma.user.update({
+      where: { id: data.id },
+      data: {
+        email: data.email_addresses[0]?.email_address || "",
+        name: `${data.first_name ?? ""} ${data.last_name ?? ""}`,
+        image: data.image_url || null,
+      },
     });
-    }
-)
+  }
+);
 
+export const syncUserDeletion = inngest.createFunction(
+  { id: "sync-user-delete" },
+  { event: "clerk/user.deleted" },
+  async ({ event }) => {
+    const prisma = await getPrisma();
+    const { data } = event;
 
-export const syncUserDeletion= inngest.createFunction(
-         {id: "sync-user-delete"},
-         {event: "clerk/user.deleted"},
-         async ({event})=>{
-              const {data } = event;
-              await prisma.user.delete({
-                    where: {id: data.id,},
+    await prisma.user.delete({
+      where: { id: data.id },
     });
-    }
+  }
 );
