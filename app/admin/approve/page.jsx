@@ -4,27 +4,58 @@ import StoreInfo from "@/components/admin/StoreInfo"
 import Loading from "@/components/Loading"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
+import { useUser ,useAuth} from "@clerk/nextjs"
+import axios from "axios"
 
 export default function AdminApprove() {
+
+
+    const {user} =useUser();
+    const {getToken} = useAuth();
 
     const [stores, setStores] = useState([])
     const [loading, setLoading] = useState(true)
 
 
     const fetchStores = async () => {
-        setStores(storesDummyData)
-        setLoading(false)
+       try{
+
+        const token =await getToken();
+        const {data}= await axios.get('/api/admin/approve-store',{
+            withCredentials:true})
+
+            setStores(data.stores);
+            console.log("FRONTEND STORES:", data.stores);
+       }catch(error){
+       toast.error(error?.response?.data?.error || error.message );
+
+       }
+     
+       setLoading(false);
     }
 
     const handleApprove = async ({ storeId, status }) => {
         // Logic to approve a store
 
+        try{
+            const token =await getToken();
+            const {data}= await axios.post('/api/admin/approve-store',{storeId,status},{
+            withCredentials:true})
+                toast.success(data.message);
+                // Refresh the stores list
+                await fetchStores();
+
+        }catch(error){
+            toast.error( error?.response?.data?.error || error.message );
+            return;
+        }
 
     }
 
     useEffect(() => {
-            fetchStores()
-    }, [])
+        if(user)
+            {fetchStores()}
+    }, [user])
 
     return !loading ? (
         <div className="text-slate-500 mb-28">
@@ -35,7 +66,7 @@ export default function AdminApprove() {
                     {stores.map((store) => (
                         <div key={store.id} className="bg-white border rounded-lg shadow-sm p-6 flex max-md:flex-col gap-4 md:items-end max-w-4xl" >
                             {/* Store Info */}
-                            <StoreInfo store={store} />
+                         <StoreInfo store={store} />
 
                             {/* Actions */}
                             <div className="flex gap-3 pt-2 flex-wrap">

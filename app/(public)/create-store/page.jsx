@@ -4,8 +4,17 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import toast from "react-hot-toast"
 import Loading from "@/components/Loading"
+import axios from "axios"
+import { useUser ,useAuth} from "@clerk/nextjs"
+import { useRouter } from "next/navigation"
+
 
 export default function CreateStore() {
+
+    const {user} = useUser();
+    const router=useRouter();
+    const {getToken} = useAuth();
+
 
     const [alreadySubmitted, setAlreadySubmitted] = useState(false)
     const [status, setStatus] = useState("")
@@ -30,25 +39,117 @@ export default function CreateStore() {
         // Logic to check if the store is already submitted
 
 
+        const token = await getToken();
+        try{    const { data } = await axios.get("/api/store/create", {
+                    withCredentials: true, // 🔥 REQUIRED
+                 }
+            )
+            const status = data.status?.toLowerCase();
+            if (["approved", "pending", "rejected"].includes(status)) {
+                setStatus(status)
+                setAlreadySubmitted(true)
+                switch(status){
+                    case "approved":
+                        setMessage("Your store has been approved! You can add products now to your store.")
+                        setTimeout(() => {
+                            router.push("/store")
+                        }, 5000);
+                        break;
+                    case "pending":
+                        setMessage("Your store application is under review. We will notify you once it's approved.")
+                        break;
+                    case "rejected":
+                        setMessage("Unfortunately, your store application was rejected. Please review the guidelines and consider reapplying.")
+                        break;
+                    default:
+                        setMessage("")
+                }
+            }
+            else{
+                setAlreadySubmitted(false)
+            }
+        }
+        catch(error){
+            toast.error(error.response?.data?.error || error.message || "Something went wrong")
+
+        }
         setLoading(false)
     }
 
-    const onSubmitHandler = async (e) => {
-        e.preventDefault()
-        // Logic to submit the store details
 
+ const onSubmitHandler = async (e) => {
+  e.preventDefault();
 
-    }
+  if (!user) {
+    toast.error("Login to continue");
+    return;
+  }
+
+  try {
+    // 🔥 1. Upload image to ImageKit
+    const imageForm = new FormData();
+    imageForm.append("file", storeInfo.image);
+
+    const uploadRes = await axios.post("/api/upload/logo", imageForm);
+    const logoUrl = uploadRes.data.url;
+
+    // 🔥 2. Create store with ImageKit URL
+    const { data } = await axios.post("/api/store/create", {
+      name: storeInfo.name,
+      username: storeInfo.username,
+      description: storeInfo.description,
+      email: storeInfo.email,
+      contact: storeInfo.contact,
+      address: storeInfo.address,
+      logo: logoUrl, // ✅ REAL URL
+    });
+
+    toast.success(data.message);
+   
+
+    //adding here at end
+    setAlreadySubmitted(true);
+    setStatus("pending");
+    setMessage("Your store application is under review...");
+   
+  } catch (error) {
+    toast.error(
+      error.response?.data?.error ||
+      error.message ||
+      "Something went wrong"
+    );
+  }
+};
 
     useEffect(() => {
-        fetchSellerStatus()
-    }, [])
+        if(user)
+       { fetchSellerStatus()}
+    }, [user])
 
+    if(!user){
+        return(
+            <div className="min-h-[80vh] mx-6 flex items-center justify-center text-slate-400">
+                <h1 className="text-2xl sm:text-4xl font-semibold">Please <span className="text-slate-500">Login</span> to Continue</h1>
+            </div>
+        )
+    }
+    console.log("user:", user);
     return !loading ? (
+        
         <>
             {!alreadySubmitted ? (
                 <div className="mx-6 min-h-[70vh] my-16">
-                    <form onSubmit={e => toast.promise(onSubmitHandler(e), { loading: "Submitting data..." })} className="max-w-7xl mx-auto flex flex-col items-start gap-3 text-slate-500">
+                    <form
+                            onSubmit={(e) => {
+                             e.preventDefault();
+                             toast.promise(onSubmitHandler(e), {
+                             loading: "Submitting data...",
+                               success: "Store submitted!",
+                              error: "Submission failed",
+                             });
+                      }}
+                    className="max-w-7xl mx-auto flex flex-col items-start gap-3 text-slate-500"
+                    >
                         {/* Title */}
                         <div>
                             <h1 className="text-3xl ">Add Your <span className="text-slate-800 font-medium">Store</span></h1>
