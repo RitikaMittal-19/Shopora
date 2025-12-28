@@ -2,77 +2,77 @@ import prisma from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2024-04-10",
+})
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
-export async function POST(request)
-{
-        try {
-        const body = await request.text()
-        const sig = request.get('stripe-signature')
-        const event = stripe.webhooks.constructEvent(body, sig, process.env.
-        STRIPE_WEBHOOK_SECRET)
+export async function POST(request) {
+  try {
+    const body = await request.text()
+    const sig = request.headers.get("stripe-signature")
 
-        const handlePaymentIntent = async (paymentIntentId,isPaid) => {
-
-        const session = await stripe.checkout.sessions.list({
-            payment_intent: paymentIntentId
-            })
-            const {orderIds, userId, appId} = session.data[0].metadata
-            }
-            if(appId !== 'gocart'){
-            return NextResponse.json({received: true, message: 'Invalid app id'})
-        }
-
-            const orderIdsArray = orderIds.split(',')
-
-            if(isPaid){
-            // mark order as paid
-            await Promise.all(orderIdsArray.map(async (orderId) => {
-            await prisma.order.update({
-            where: {id: orderId}, 
-            data: {isPaid: true}
-            })
-            }))
-            //delete cart from 
-
-            await prisma.user.update({
-            where: {id: userId}, 
-                data: {cart : {}}
-            })
-        }else{ 
-             // delete order from db
-            await Promise.all(orderIdsArray.map(async (orderId) => {
-                await prisma.order.delete({
-                    where: {id: orderId} })      
-            }) )
-        }
-    
-    switch (event.type) {
-    case 'payment_intent_succeeded':
-        {
-            await handlePaymentIntent(event.data.object.id,true)
-            break;
-        }
-
-        case 'payment_intent_canceled':
-        {
-            await handlePaymentIntent(event.data.object.id,false)
-            break;
-        }
-    default:
-        {
-            console.log("Unhandled event type",event.type)
-        }
-        break;
+    if (!sig) {
+      return NextResponse.json(
+        { error: "Missing Stripe signature" },
+        { status: 400 }
+      )
     }
-    return NextResponse.json({received: true})
-} 
-        catch (error) {
-            console.error(error)
-            return NextResponse.json({error: error.message }, { status: 400 })
-        }
-}
 
-export const config = 
-{
-api: {bodyparser: false}}
+    const event = stripe.webhooks.constructEvent(
+      body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    )
+
+    // ✅ Handle successful checkout
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object
+
+      const { orderIds, userId, appId } = session.metadata || {}
+
+      if (appId !== "gocart") {
+        return NextResponse.json({ received: true })
+      }
+
+      const orderIdsArray = orderIds?.split(",") || []
+
+      // Mark orders as paid
+      await Promise.all(
+        orderIdsArray.map((orderId) =>
+          prisma.order.update({
+            where: { id: orderId },
+            data: { isPaid: true },
+          })
+        )
+      )
+
+      // Clear user cart
+      await prisma.user.update({
+        where: { id: userId },
+        data: { cart: {} },
+      })
+    }
+
+    // ❌ Optional: handle failed payments
+    if (event.type === "checkout.session.expired") {
+      const session = event.data.object
+      const { orderIds } = session.metadata || {}
+
+      const orderIdsArray = orderIds?.split(",") || []
+
+      await Promise.all(
+        orderIdsArray.map((orderId) =>
+          prisma.order.delete({ where: { id: orderId } })
+        )
+      )
+    }
+
+    return NextResponse.json({ received: true })
+  } catch (error) {
+    console.error("Stripe webhook error:", error)
+    return NextResponse.json(
+      { error: error.message },
+      { status: 400 }
+    )
+  }
+}
