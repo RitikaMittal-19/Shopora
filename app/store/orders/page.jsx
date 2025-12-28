@@ -1,23 +1,53 @@
 'use client'
 import { useEffect, useState } from "react"
 import Loading from "@/components/Loading"
-import { orderDummyData } from "@/assets/assets"
+import axios from "axios"
+import toast from "react-hot-toast"
 
 export default function StoreOrders() {
+
+
+
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
     const [selectedOrder, setSelectedOrder] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
 
 
-    const fetchOrders = async () => {
-       setOrders(orderDummyData)
-       setLoading(false)
-    }
+   const fetchOrders = async () => {
+  try {
+    const { data } = await axios.get("/api/store/orders", {
+      withCredentials: true,
+    });
 
+    setOrders(Array.isArray(data.orders) ? data.orders : []);
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.error ||
+      "Something went wrong while fetching orders"
+    );
+    setOrders([]);
+  } finally {
+    setLoading(false);
+  }
+};
     const updateOrderStatus = async (orderId, status) => {
         // Logic to update the status of an order
+         try {
+            
+           await axios.post('/api/store/orders',{orderId,status}, {
+                withCredentials: true,
+            })
+            setOrders(prev=>
+                prev.map(order=>
+                    order.id===orderId?{...order,status}:order))
 
+                    toast.success('Order status updated')
+            
+        } catch (error) {
+           toast.error(error?.response?.data?.error || "Something went wrong while fetching orders")
+
+        }
 
     }
 
@@ -117,13 +147,14 @@ export default function StoreOrders() {
                         <div className="mb-4">
                             <h3 className="font-semibold mb-2">Products</h3>
                             <div className="space-y-2">
-                                {selectedOrder.orderItems.map((item, i) => (
+                                {Array.isArray(selectedOrder.orderItems) &&
+                                            selectedOrder.orderItems.map((item, i) =>  (
                                     <div key={i} className="flex items-center gap-4 border border-slate-100 shadow rounded p-2">
                                         <img
-                                            src={item.product.images?.[0].src || item.product.images?.[0]}
-                                            alt={item.product?.name}
-                                            className="w-16 h-16 object-cover rounded"
-                                        />
+                                            src={item.product?.images?.[0] || ""}
+                                             alt={item.product?.name || "Product"}
+                                             className="w-16 h-16 object-cover rounded"
+                                                />
                                         <div className="flex-1">
                                             <p className="text-slate-800">{item.product?.name}</p>
                                             <p>Qty: {item.quantity}</p>
@@ -138,9 +169,18 @@ export default function StoreOrders() {
                         <div className="mb-4">
                             <p><span className="text-green-700">Payment Method:</span> {selectedOrder.paymentMethod}</p>
                             <p><span className="text-green-700">Paid:</span> {selectedOrder.isPaid ? "Yes" : "No"}</p>
-                            {selectedOrder.isCouponUsed && (
-                                <p><span className="text-green-700">Coupon:</span> {selectedOrder.coupon.code} ({selectedOrder.coupon.discount}% off)</p>
-                            )}
+                            {selectedOrder.isCouponUsed &&
+  selectedOrder.coupon &&
+  typeof selectedOrder.coupon === "object" &&
+  selectedOrder.coupon.code && (
+    <p>
+      <span className="text-green-700">Coupon:</span>{" "}
+      {selectedOrder.coupon.code}
+      {selectedOrder.coupon.discount
+        ? ` (${selectedOrder.coupon.discount}% off)`
+        : ""}
+    </p>
+)}
                             <p><span className="text-green-700">Status:</span> {selectedOrder.status}</p>
                             <p><span className="text-green-700">Order Date:</span> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
                         </div>

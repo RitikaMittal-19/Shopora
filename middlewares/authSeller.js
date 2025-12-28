@@ -1,26 +1,27 @@
 import prisma from "@/lib/prisma";
 
+const authSeller = async (userId) => {
+  try {
+    if (!userId) return null;
 
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { store: true },
+    });
 
-const authSeller=async(userId)=>{
-    try {
-        const user=await prisma.user.findUnique({
-            where:{id:userId},
-            include:{store:true}
-        });
-        
-        if(user.store){
-            if(user.store.status==="approved"){
-                return user.store.id;
-            }else{
-                return false;
-            }
-        }
-    } catch (error) {
-        console.error("Authentication error:", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-    }
-}
+    if (!user || !user.store) return null;
 
+    if (user.store.status !== "approved") return null;
+
+    // ✅ RETURN OBJECT (not string)
+    return {
+      storeId: user.store.id,
+    };
+
+  } catch (error) {
+    console.error("Authentication error:", error);
+    return null;
+  }
+};
 
 export default authSeller;

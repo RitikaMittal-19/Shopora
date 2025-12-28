@@ -1,17 +1,7 @@
 import { inngest } from "./client";
-
-let prismaClient;
-
-async function getPrisma() {
-  if (!prismaClient) {
-    const { PrismaClient } = await import("@prisma/client");
-    prismaClient = new PrismaClient();
-  }
-  return prismaClient;
-}
+import prisma from "@/lib/prisma";
 
 /* ================= USER SYNC ================= */
-
 export const syncUserCreation = inngest.createFunction(
   { id: "sync-user-create" },
   { event: "clerk/user.created" },
@@ -19,17 +9,27 @@ export const syncUserCreation = inngest.createFunction(
     const prisma = await getPrisma();
     const { data } = event;
 
-    await prisma.user.create({
-      data: {
+    const email = data.email_addresses?.[0]?.email_address || "";
+    const name =
+      `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim() || "User";
+    const image = data.image_url || "";
+
+    await prisma.user.upsert({
+      where: { id: data.id },
+      update: {
+        email,
+        name,
+        image,
+      },
+      create: {
         id: data.id,
-        email: data.email_addresses?.[0]?.email_address || "",
-        name: `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim(),
-        image: data.image_url || null,
+        email,
+        name,
+        image,
       },
     });
   }
 );
-
 export const syncUserUpdation = inngest.createFunction(
   { id: "sync-user-update" },
   { event: "clerk/user.updated" },
@@ -37,12 +37,23 @@ export const syncUserUpdation = inngest.createFunction(
     const prisma = await getPrisma();
     const { data } = event;
 
-    await prisma.user.update({
+    const email = data.email_addresses?.[0]?.email_address || "";
+    const name =
+      `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim() || "User";
+    const image = data.image_url || "";
+
+    await prisma.user.upsert({
       where: { id: data.id },
-      data: {
-        email: data.email_addresses?.[0]?.email_address || "",
-        name: `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim(),
-        image: data.image_url || null,
+      update: {
+        email,
+        name,
+        image,
+      },
+      create: {
+        id: data.id,
+        email,
+        name,
+        image,
       },
     });
   }

@@ -124,6 +124,32 @@ export default function AdminCoupons() {
           className="w-full mt-2 p-2 border rounded"
         />
 
+      <div className="mt-5">
+                    <div className="flex gap-2 mt-3">
+                        <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
+                            <input type="checkbox" className="sr-only peer"
+                                name="forNewUser" checked={newCoupon.forNewUser}
+                                onChange={(e) => setNewCoupon({ ...newCoupon, forNewUser: e.target.checked })}
+                            />
+                            <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
+                            <span className="dot absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-5"></span>
+                        </label>
+                        <p>For New User</p>
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                        <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
+                            <input type="checkbox" className="sr-only peer"
+                                name="forMember" checked={newCoupon.forMember}
+                                onChange={(e) => setNewCoupon({ ...newCoupon, forMember: e.target.checked })}
+                            />
+                            <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
+                            <span className="dot absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-5"></span>
+                        </label>
+                        <p>For Member</p>
+                    </div>
+                </div>
+
+
         <button className="mt-4 px-6 py-2 bg-slate-700 text-white rounded">
           Add Coupon
         </button>
@@ -142,6 +168,8 @@ export default function AdminCoupons() {
           <th className="px-6 py-3 text-left font-medium">Code</th>
           <th className="px-6 py-3 text-center font-medium">Discount</th>
           <th className="px-6 py-3 text-center font-medium">Expires</th>
+          <th className="py-3 px-4 text-left font-semibold text-slate-600">New User</th>
+          <th className="py-3 px-4 text-left font-semibold text-slate-600">For Member</th>
           <th className="px-6 py-3 text-center font-medium">Action</th>
         </tr>
       </thead>
@@ -178,6 +206,9 @@ export default function AdminCoupons() {
             <td className="px-6 py-4 text-center text-slate-600">
               {format(new Date(c.expiresAt), "dd MMM yyyy")}
             </td>
+            <td className="py-3 px-4 text-slate-800">{c.forNewUser ? 'Yes' : 'No'}</td>
+
+            <td className="py-3 px-4 text-slate-800">{c.forMember ? 'Yes' : 'No'}</td>
 
             <td className="px-6 py-4 text-center">
               <button
@@ -190,6 +221,7 @@ export default function AdminCoupons() {
                 }
                 className="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-red-100 transition"
               >
+                
                 <Trash2 className="w-4 h-4 text-red-600" />
               </button>
             </td>

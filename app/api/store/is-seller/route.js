@@ -5,7 +5,7 @@ import authSeller from "@/middlewares/authSeller";
 
 //auth seller
 
-export async function POST(request)
+export async function GET(request)
 {
      try{
 
@@ -25,3 +25,4 @@ export async function POST(request)
      
      }
 }
+
