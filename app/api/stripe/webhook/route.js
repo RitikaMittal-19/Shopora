@@ -9,6 +9,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 export async function POST(request) {
+  console.log("🔥 STRIPE WEBHOOK HIT");
+
   try {
     const body = await request.text();
     const sig = request.headers.get("stripe-signature");
@@ -27,7 +29,6 @@ export async function POST(request) {
       const session = event.data.object;
 
       if (session.payment_status !== "paid") {
-        console.warn("⚠️ Payment not completed yet");
         return NextResponse.json({ received: true });
       }
 
@@ -47,7 +48,10 @@ export async function POST(request) {
       const orderIdsArray = orderIds.split(",");
 
       await prisma.order.updateMany({
-        where: { id: { in: orderIdsArray } },
+        where: {
+          id: { in: orderIdsArray },
+          isPaid: false,
+        },
         data: { isPaid: true },
       });
 
