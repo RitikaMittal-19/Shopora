@@ -24,6 +24,38 @@ const OurSpecs = () => {
                 }
             </div>
 
+                {/* Become a Vendor */}
+<section className="pt-32 lg:pt-44 pb-20 lg:pb-32 text-center">
+  <div className="container mx-auto px-6 lg:px-12 max-w-4xl">
+
+    <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">
+      Become a Vendor
+    </p>
+
+    <h1 className="text-4xl md:text-5xl lg:text-6xl font-light mb-8 text-balance">
+      Turn Your Brand Into 
+      <span className="italic  text-[#dcc288]"> A Global Business</span>
+    </h1>
+
+    <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+      Join Shopora’s AI-powered multi-vendor marketplace and reach customers
+      worldwide. List products faster, sell smarter, and grow without limits.
+    </p>
+
+    {/* CTA */}
+    <div className="mt-10 flex justify-center gap-4 flex-wrap">
+      <a
+        href="/create-store"
+        className="bg-slate-800 text-white px-8 py-3 rounded-md hover:bg-slate-900 transition"
+      >
+        Create Store
+      </a>
+
+      
+    </div>
+
+  </div>
+</section>
         </div>
     )
 }

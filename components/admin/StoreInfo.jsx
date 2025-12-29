@@ -15,8 +15,8 @@ const StoreInfo = ({store}) => {
                     className={`text-xs font-semibold px-4 py-1 rounded-full ${store.status === 'pending'
                         ? 'bg-yellow-100 text-yellow-800'
                         : store.status === 'rejected'
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-green-100 text-green-800'
+                        ? 'bg-slate-100 text-slate-800'
+                        : 'bg-[#C9A24D]/10 text-[#C9A24D]'
                         }`}
                 >
                     {store.status}

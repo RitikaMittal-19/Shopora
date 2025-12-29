@@ -20,8 +20,11 @@ import { ClockFadingIcon, HeadsetIcon, SendIcon } from "lucide-react";
 import profile_pic1 from "./profile_pic1.jpg"
 import profile_pic2 from "./profile_pic2.jpg"
 import profile_pic3 from "./profile_pic3.jpg"
+import hero_image_ from "./hero_image_.png"
+import t_ from "./t_.png"
 
 export const assets = {
+    hero_image_,t_,
     upload_area, hero_model_img,
     hero_product_img1, hero_product_img2, gs_logo,
     product_img1, product_img2, product_img3, product_img4, product_img5, product_img6,
@@ -243,12 +246,26 @@ export const productDummyData = [
         updatedAt: 'Sat Jul 19 2025 14:51:25 GMT+0530 (India Standard Time)',
     }
 ];
-
 export const ourSpecsData = [
-    { title: "Free Shipping", description: "Enjoy fast, free delivery on every order no conditions, just reliable doorstep.", icon: SendIcon, accent: '#05DF72' },
-    { title: "7 Days easy Return", description: "Change your mind? No worries. Return any item within 7 days.", icon: ClockFadingIcon, accent: '#FF8904' },
-    { title: "24/7 Customer Support", description: "We're here for you. Get expert help with our customer support.", icon: HeadsetIcon, accent: '#A684FF' }
-]
+  {
+    title: "Free Shipping",
+    description: "Enjoy fast, free delivery on every order — no conditions, just reliable doorstep service.",
+    icon: SendIcon,
+    accent: "#C9A24D", // premium gold
+  },
+  {
+    title: "7 Days Easy Return",
+    description: "Changed your mind? No worries. Return any item within 7 days, hassle-free.",
+    icon: ClockFadingIcon,
+    accent: "#BFA76A", // champagne gold
+  },
+  {
+    title: "24/7 Customer Support",
+    description: "We’re always here for you. Get expert assistance anytime, anywhere.",
+    icon: HeadsetIcon,
+    accent: "#A8893B", // deep royal gold
+  },
+];
 
 export const addressDummyData = {
     id: "addr_1",

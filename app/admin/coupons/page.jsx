@@ -131,7 +131,7 @@ export default function AdminCoupons() {
                                 name="forNewUser" checked={newCoupon.forNewUser}
                                 onChange={(e) => setNewCoupon({ ...newCoupon, forNewUser: e.target.checked })}
                             />
-                            <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
+                            <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:bg-slate-700 transition-colors duration-200"></div>
                             <span className="dot absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-5"></span>
                         </label>
                         <p>For New User</p>
@@ -142,7 +142,7 @@ export default function AdminCoupons() {
                                 name="forMember" checked={newCoupon.forMember}
                                 onChange={(e) => setNewCoupon({ ...newCoupon, forMember: e.target.checked })}
                             />
-                            <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
+                            <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:bg-slate-700 transition-colors duration-200"></div>
                             <span className="dot absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-5"></span>
                         </label>
                         <p>For Member</p>
@@ -198,7 +198,7 @@ export default function AdminCoupons() {
             </td>
 
             <td className="px-6 py-4 text-center">
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-10 font-medium bg-[#C9A24D]/10" style={{ color: "#C9A24D" }}>
                 {c.discount}%
               </span>
             </td>
@@ -222,7 +222,7 @@ export default function AdminCoupons() {
                 className="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-red-100 transition"
               >
                 
-                <Trash2 className="w-4 h-4 text-red-600" />
+                <Trash2 className="w-4 h-4 "style={{ color: "#C9A24D" }} />
               </button>
             </td>
           </tr>
