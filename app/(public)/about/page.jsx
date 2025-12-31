@@ -8,6 +8,42 @@ const About = () => {
   return (
     <div className="min-h-screen bg-background">
 
+              {/* ================= STICKY IMAGE SECTION ================= */}
+      <section className="relative mt-32 h-[200vh] overflow-hidden">
+        
+        {/* Background Image */}
+        <Image
+          src={assets.p1} // 👈 add image in public folder
+          alt="Shopora Editorial"
+          fill
+          priority
+          className="object-cover"
+        />
+
+        {/* Dark Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
+
+        {/* Sticky Center Content */}
+        <div className="sticky top-0 h-screen flex items-center justify-center">
+          <div className="text-center bg-white/90 backdrop-blur-lg px-12 py-10 rounded-2xl shadow-xl max-w-xl">
+            <p className="text-xs tracking-[0.3em] uppercase text-slate-500">
+              Editorial
+            </p>
+
+            <h2 className="mt-4 text-3xl md:text-4xl font-light text-slate-900">
+              Fashion that moves
+              <br />
+              <span className="italic">with you</span>
+            </h2>
+
+           
+          </div>
+        </div>
+      </section>
+
+      {/* ================= END STICKY SECTION ================= */}
+
+
       {/* Hero */}
       <section className="pt-32 lg:pt-44 pb-20 lg:pb-32 text-center">
         <div className="container mx-auto px-6 lg:px-12 max-w-4xl">
@@ -90,6 +126,10 @@ const About = () => {
     </div>
   </div>
 </section>
+
+    
+
+
       {/* Values */}
       <section className="py-20 bg-card">
         <div className="container mx-auto px-6 lg:px-12 grid md:grid-cols-2 lg:grid-cols-4 gap-8">

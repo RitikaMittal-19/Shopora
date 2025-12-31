@@ -56,7 +56,7 @@ const Footer = () => {
                                     background: "linear-gradient(135deg, #C9A24D, #F2D98D)",
                                     WebkitBackgroundClip: "text",
                                     WebkitTextFillColor: "transparent",
-                                }} >go</span>cart<span style={{
+                                }} >shop</span>ora<span style={{
                                     background: "linear-gradient(135deg, #C9A24D, #F2D98D)",
                                     WebkitBackgroundClip: "text",
                                     WebkitTextFillColor: "transparent",

@@ -22,13 +22,22 @@ import profile_pic2 from "./profile_pic2.jpg"
 import profile_pic3 from "./profile_pic3.jpg"
 import hero_image_ from "./hero_image_.png"
 import t_ from "./t_.png"
+import p1 from "./p1.jpg"
+import p2 from "./p2.jpg"
+import p3 from "./p3.jpg"
+import p4 from "./p4.jpg"
+import p5 from "./p5.jpg"
+import p6 from "./p6.jpg"
+import p7 from "./p7.jpg"
+import dior from "./dior.png"
 
 export const assets = {
-    hero_image_,t_,
+    hero_image_,t_,dior,
     upload_area, hero_model_img,
     hero_product_img1, hero_product_img2, gs_logo,
     product_img1, product_img2, product_img3, product_img4, product_img5, product_img6,
     product_img7, product_img8, product_img9, product_img10, product_img11, product_img12,
+    p1,p2,p3,p4,p5,p6,p7
 }
 
 export const categories = ["Headphones", "Speakers", "Watch", "Earbuds", "Mouse", "Decoration"];
